@@ -1,0 +1,267 @@
+Latam Challenge
+
+
+Part 1: Infrastructure and IaC
+
+
+Let's consider a hypothetical scenario:
+
+
+Scenario: Real-time Analytics for E-commerce Platform
+
+
+In this scenario, let's assume you have an e-commerce platform that generates events (e.g., user actions, purchases, product views) that you want to ingest, store, and analyze in real-time.
+
+
+Components:
+
+
+1. Data Source (Producer):
+   - The e-commerce platform generates events (e.g., user activity, purchases).
+
+
+2. Pub/Sub System:
+   - We use a pub/sub system to decouple the producers and consumers.
+
+
+3. Data Ingestion Service (Subscriber 1):
+   - Subscribe to the relevant topics on the pub/sub system.
+   - Ingest data from the events and store them in a database.
+
+
+4. Analytics Service (Subscriber 2):
+   - Subscribe to the same or different topics on the pub/sub system.
+   - Process the ingested data for real-time analytics.
+   - Store aggregated analytics results in another database or data warehouse.
+
+
+Workflow:
+
+
+1. Data Ingestion Workflow:
+   - The e-commerce platform produces events and publishes them to a topic in the pub/sub system.
+   - The data ingestion service (Subscriber 1) consumes these events from the topic.
+   - It processes and stores the raw data in a database.
+
+
+2. Analytics Workflow:
+   - The analytics service (Subscriber 2) consumes the same events or a copy from another topic.
+   - It performs real-time analytics on the ingested data, such as calculating metrics, trends, or user behavior patterns.
+   - Aggregated analytics results are stored in a separate database or data warehouse.
+
+
+Technologies for implementation:
+
+
+- Pub/Sub System: Google Cloud Pub/Sub.
+
+
+- Data Ingestion and Analytics Service: Google Cloud Dataflow.
+
+
+- Database for Raw Data: MongoDB.
+
+
+- Database for Analytics Results: Google BigQuery.
+
+
+Benefits:
+
+
+- Scalability: Pub/Sub systems enable horizontal scaling, allowing you to handle large amounts of incoming data.
+- Flexibility: Components are decoupled, allowing you to add or modify services without affecting the entire system.
+- Real-time Analytics: Enables real-time analysis of incoming data for timely insights.
+
+
+This example provides a high-level overview of a pub/sub architecture for data ingestion and analytics in a real-time e-commerce scenario. Keep in mind that the choice of specific technologies will depend on your infrastructure, requirements, and preferences.
+
+
+
+
+High-level architecture diagram
+
+
++-------------------------------------------------------------+
+|                           E-commerce                          |
+|                            Data Source                          |
+|                             (e.g., Events)                        |
++-----------------------------|-------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------+
+|                   Google Cloud Pub/Sub                 |
+|  (Decouples Producers and Consumers)      |
+|               Topic: your-pubsub-topic                 |
++-----------------------------|-------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------+
+|                   Data Ingestion Service                 |
+|                   Google Cloud Dataflow                |
+|                 Subscribed to Pub/Sub                  |
++-----------------------------|-------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------+
+|                   Analytics Service                         |
+|               Google Cloud Dataflow                   |
+|            Subscribed to Pub/Sub,                     |
+|          Performs Real-Time Analytics             |
+|           Stores Aggregated Data in                  |
+|                 Google BigQuery                            |
++-----------------------------|-------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------+
+|                       MongoDB                                   |
+| Stores Raw Data from Data Ingestion           |
++-----------------------------|-------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------+
+|                    Google BigQuery                          |
+| Stores Aggregated Analytics Results)          |
++-----------------------------|-------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------+
+|                  Google Cloud Monitoring             |
+|  Monitors Critical Metrics, Sets Up Alerts    |
+|       Creates Dashboards for Visualization    |
++-------------------------------------------------------------+
+
+
+
+
+Terraform structure
+
+
+terraform/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+│
+└── modules/
+    ├── pubsub/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    │
+    ├── dataflow/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    │
+    ├── bigquery/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+     |
+    ├── mongodb/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    │
+    └── monitoring/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+
+
+
+
+
+
+Part 2: Apps and CI/CD
+
+
+DevOps Engineer
+
+
+Part 3: Integration Tests and Quality Control
+
+
+QC Engineer
+
+
+Part 4: Monitoring and Metrics
+
+
+Identifying critical metrics is crucial for measuring and observability of the system, here are some critical metrics:
+
+
+Critical Metrics:
+
+
+1. Pub/Sub Topic Message Count: as a measure the success rate of messages processed by the Pub/Sub system.
+
+
+2. Dataflow Job Latency: for monitoring the latency of data processing jobs in Dataflow.
+
+
+3. MongoDB Connection Count: for tracking the average number of open connections to MongoDB.
+
+
+4. Overall System Availability: for understanding the health and availability of the resources. 
+
+
+Tool for Monitoring:
+
+
+I propose utilizing Google Cloud Monitoring to collect and visualize metrics.
+
+
+
+
+
+
+
+
+Part 5: Alerting and SRE
+
+
+Defining Service Level Indicators (SLIs) and Service Level Objectives (SLOs) is crucial for measuring and maintaining the reliability and performance of your system. In the context of the provided example system, I can define the following SLIs and SLOs:
+
+
+1. Pub/Sub Topic Message Count: Set a threshold for the success rate, and the SLO represents the target success rate over a specific time window.
+
+
+* SLI: Percentage of successfully processed messages compared to the total messages published.
+* SLO: Achieve a 99.9% success rate for message processing over a 30-day period.
+
+
+
+
+2. Dataflow Job Latency: Set a threshold for acceptable latency, and the SLO represents the percentage of jobs meeting the latency target.
+
+
+* SLI: Average latency of data processing jobs in Dataflow.
+* SLO: Ensure that 95% of data processing jobs have a latency of less than 10 seconds.
+
+
+
+
+3. MongoDB Connection Count: Set a threshold for the maximum allowed connections and define the SLO based on the desired level of availability.
+
+
+* SLI: The average number of open connections to MongoDB.
+* SLO: Maintain an average connection count below 100 connections with 99% availability.
+
+
+
+
+4. Overall System Availability: Aggregate SLIs from individual components (e.g., Pub/Sub, Dataflow, MongoDB). Define an SLO for the overall system availability based on the combined SLIs.
+* SLI: Percentage of uptime for the entire system.
+* SLO: Achieve a 99.99% system uptime over a rolling 30-day period.
+
+
+Set up alerting policies based on defined thresholds for each metric. I propose integrate alert notifications with Slack channels for timely response to issues.
+
+
+Continuous Improvement
+
+
+* Regularly review and update SLOs based on changing system requirements and performance observations.
+* Conduct post-incident reviews to identify areas for improvement and adjust SLOs accordingly.
+* Remember that SLIs, SLOs, and monitoring thresholds should align with your business and user expectations. Adjust these values based on your system's specific needs and priorities. Regularly review and refine these metrics and objectives as your system evolves and grows.
